@@ -1,0 +1,20 @@
+body{
+	margin:1%;
+}
+
+#loginarea{
+	background-color:antiquewhite;
+}
+
+#onlineusers{
+	background-color:beige;
+}
+
+
+.section-header{
+	background:#EEEEEE;
+}
+
+#input{
+	width:100%;
+}

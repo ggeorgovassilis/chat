@@ -22,9 +22,9 @@ public class AjaxChatController {
 		return chatService.getListOfActiveUsers();
 	}
 
-	@RequestMapping(value = "/users/logon/{name}", method = RequestMethod.GET)
-	public @ResponseBody void logonUser(@PathVariable String name) {
-		chatService.logon(name);
+	@RequestMapping(value = "/users/logon")
+	public @ResponseBody void logonUser(String value) {
+		chatService.logon(value);
 	}
 
 	@RequestMapping(value = "/users/logoff/{name}", method = RequestMethod.GET)
