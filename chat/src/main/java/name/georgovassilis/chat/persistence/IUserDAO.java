@@ -1,5 +1,6 @@
 package name.georgovassilis.chat.persistence;
 
+
 import name.georgovassilis.chat.model.domain.*;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;

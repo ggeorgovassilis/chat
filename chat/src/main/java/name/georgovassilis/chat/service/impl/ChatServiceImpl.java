@@ -1,16 +1,16 @@
 package name.georgovassilis.chat.service.impl;
 
 
-import name.georgovassilis.chat.model.dto.ActiveUsersDTO;
-import name.georgovassilis.chat.model.domain.User;
+import name.georgovassilis.chat.model.dto.*;
+import name.georgovassilis.chat.model.domain.*;
 import name.georgovassilis.chat.model.domain.User.Status;
 import name.georgovassilis.chat.service.IChatService;
 import name.georgovassilis.chat.persistence.*;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
-import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
 
 @Service("ChatService")
 @Transactional
@@ -18,6 +18,11 @@ public class ChatServiceImpl implements IChatService{
 	
 	@Autowired
 	private IUserDAO userDAO;
+	@Autowired
+	private IMessageDAO messageDAO;
+
+	@Autowired
+	private ISequenceDAO sequenceDAO;
 
 	@Override
 	public ActiveUsersDTO getListOfActiveUsers() {
@@ -47,6 +52,48 @@ public class ChatServiceImpl implements IChatService{
 			user.setStatus(Status.offline);
 			userDAO.save(user);
 		}
+	}
+
+	@Override
+	public void sendMessage(String sender, String recipient, String text) {
+		Message message = new Message();
+		message.setId(sequenceDAO.getNextInSequence());
+		message.setRecipient(recipient);
+		message.setSender(sender);
+		message.setText(text);
+		message.setSent(new Date());
+		messageDAO.save(message);
+	}
+
+	@Override
+	public MessageListDTO getMessagesFor(String user, int lastReadMessageId) {
+		List<Message> messages = messageDAO.findUnreadMessagesForRecipient(user, lastReadMessageId);
+		MessageListDTO result = new MessageListDTO();
+		for (Message m:messages){
+			MessageDTO dto = new MessageDTO();
+			dto.setSender(m.getRecipient());
+			dto.setId(m.getId());
+			dto.setSent(m.getSent());
+			dto.setText(m.getText());
+			result.getList().add(dto);
+		}
+		return result;
+	}
+
+	@Override
+	public MessageListDTO getMessagesBetween(String recipient, String sender, int lastReadMessageId) {
+		List<Message> messages = messageDAO.findUnreadMessagesBetweenUsers(recipient, sender, lastReadMessageId);
+		MessageListDTO result = new MessageListDTO();
+		for (Message m:messages){
+			MessageDTO dto = new MessageDTO();
+			dto.setSender(m.getSender());
+			dto.setRecipient(m.getRecipient());
+			dto.setId(m.getId());
+			dto.setSent(m.getSent());
+			dto.setText(m.getText());
+			result.getList().add(dto);
+		}
+		return result;
 	}
 
 }
