@@ -1,20 +1,56 @@
-body{
-	margin:1%;
+body,html{
+	height:100%;
 }
 
 #loginarea{
-	background-color:antiquewhite;
+	background-color:black;
+	min-height:1em;
+	padding:1%;
+}
+
+#loginarea a{
+	color:pink;
+}
+
+.online-users-section{
+	float:right;
+	height:100%;
 }
 
 #onlineusers{
-	background-color:beige;
+	background-color:darksalmon;
+	color:black;
+	height:100%;
 }
 
 
 .section-header{
 	background:#EEEEEE;
+	padding:1%;
 }
 
 #input{
-	width:100%;
+	width:99%;
+}
+
+#chatwindow{
+	padding:1%;
+}
+
+.message{
+	padding-top:0.5em;
+}
+
+.message.same-sender .sender{
+	visibility:hidden;
+}
+
+.message .sender{
+	float:left;
+	margin-right:0.5em;
+	color:blue;
+}
+
+.message .recipient{
+	display:none;
 }

@@ -6,6 +6,15 @@ import java.util.ArrayList;
 public class ActiveUsersDTO implements Serializable{
 
 	private List<String> activeUsers = new ArrayList();
+	private int hash;
+
+	public int getHash() {
+		return hash;
+	}
+
+	public void setHash(int hash) {
+		this.hash = hash;
+	}
 
 	public List<String> getActiveUsers() {
 		return activeUsers;

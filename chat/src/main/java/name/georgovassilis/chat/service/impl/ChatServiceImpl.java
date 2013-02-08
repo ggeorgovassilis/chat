@@ -30,6 +30,7 @@ public class ChatServiceImpl implements IChatService{
 		ActiveUsersDTO activeUsers = new ActiveUsersDTO();
 		for (User user:list){
 			activeUsers.getActiveUsers().add(user.getLogin());
+			activeUsers.setHash(activeUsers.getHash()+user.getLogin().hashCode());
 		}
 		return activeUsers;
 	}
@@ -64,34 +65,33 @@ public class ChatServiceImpl implements IChatService{
 		message.setSent(new Date());
 		messageDAO.save(message);
 	}
+	
+	protected MessageDTO convert(Message m){
+		MessageDTO dto = new MessageDTO();
+		dto.setSender(m.getSender());
+		dto.setRecipient(m.getRecipient());
+		dto.setId(m.getId());
+		dto.setSent(m.getSent());
+		dto.setText(m.getText());
+		return dto;
+	}
 
 	@Override
 	public MessageListDTO getMessagesFor(String user, int lastReadMessageId) {
-		List<Message> messages = messageDAO.findUnreadMessagesForRecipient(user, lastReadMessageId);
+		List<Message> messages = messageDAO.findMessagesForRecipient(user, lastReadMessageId);
 		MessageListDTO result = new MessageListDTO();
 		for (Message m:messages){
-			MessageDTO dto = new MessageDTO();
-			dto.setSender(m.getRecipient());
-			dto.setId(m.getId());
-			dto.setSent(m.getSent());
-			dto.setText(m.getText());
-			result.getList().add(dto);
+			result.getList().add(convert(m));
 		}
 		return result;
 	}
 
 	@Override
 	public MessageListDTO getMessagesBetween(String recipient, String sender, int lastReadMessageId) {
-		List<Message> messages = messageDAO.findUnreadMessagesBetweenUsers(recipient, sender, lastReadMessageId);
+		List<Message> messages = messageDAO.findMessagesBetweenUsers(recipient, sender, lastReadMessageId);
 		MessageListDTO result = new MessageListDTO();
 		for (Message m:messages){
-			MessageDTO dto = new MessageDTO();
-			dto.setSender(m.getSender());
-			dto.setRecipient(m.getRecipient());
-			dto.setId(m.getId());
-			dto.setSent(m.getSent());
-			dto.setText(m.getText());
-			result.getList().add(dto);
+			result.getList().add(convert(m));
 		}
 		return result;
 	}

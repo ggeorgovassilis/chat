@@ -16,11 +16,12 @@
 <div id="loginarea">
 <a href="#" id="username" data-emptytext="Enter login" data-type="text" data-send="always" data-showbuttons="false" data-pk="1" data-url="/chat/ajax/users/logon" data-original-title="Enter username"></a>
 </div>
-<hr/>
+<div class="online-users-section">
 <div class=section-header>Online users</div>
-<select id="onlineusers"></select>
-<div id="chatwindow"></div>
+<select id="onlineusers" size=5></select>
+</div>
 <div class="keyboard-section">
+<div id="chatwindow"></div>
 <input id="input" type="text"/>
 </div>
 <script type="text/javascript">
@@ -28,11 +29,9 @@ $(function(){
 	$.fn.editable.defaults.mode = 'inline';
 	$("#username").editable({
 		success:function(){
-			updateOnlineUsers();
+			window.setInterval("sync()",2000);
 		}
 	});
-	
-	window.setTimeout("sync()",1000);
 });
 
 function getCurrentUserLogin(){
@@ -40,7 +39,7 @@ function getCurrentUserLogin(){
 }
 
 function getCurrentChatPartner(){
-	return $("#onlineusers option:selected").text();
+	return $("#onlineusers option:selected").val();
 }
 
 function updateOnlineUsers(){
@@ -48,13 +47,18 @@ function updateOnlineUsers(){
 		dataType: "json",
 		url: "ajax/users/list",
 		success: function(data){
+			session.onlineUsers = data;
 			var onlineusers = $("#onlineusers");
+			var selected = getCurrentChatPartner();
 			onlineusers.empty();
 			for (var i=0;i<data.activeUsers.length;i++){
 				var line = $("<option></option>");
-				line.text(data.activeUsers[i]);
-				line.attr("value",data.activeUsers[i]);
-				console.log(data.activeUsers[i]);
+				var user = data.activeUsers[i]; 
+				if (user == selected)
+					line.attr("selected","true");
+				var unreadMessageCount = getUnreadMessageCountWithPartner(user);
+				line.text(user+" ("+unreadMessageCount+")");
+				line.attr("value",user);
 				onlineusers.append(line);
 			}
 			if (data.activeUsers.length == 0){
@@ -64,8 +68,20 @@ function updateOnlineUsers(){
 		});
 }
 
+function getUnreadMessageCountWithPartner(user){
+	var conversation = session.conversations[user];
+	if (!conversation)
+		return 0;
+	var count = 0;
+	for (var i=0;i<conversation.messages.length;i++)
+		if (!(conversation.messages[i].seen==true))
+			count++;
+	return count;
+}
+
 function sendTextToChat(){
 	var line = $("#input").val();
+	$("#input").val("");
 	var recipient = getCurrentChatPartner();
 	$.ajax({
 		dataType: "json",
@@ -76,22 +92,59 @@ function sendTextToChat(){
 		});
 }
 
+var previousUserTalking = "";
+
+function renderMessageLine(msg){
+	var wnd = $("#chatwindow");
+	var css ="message";
+	if (previousUserTalking == msg.sender)
+		css+=" same-sender";
+	previousUserTalking = msg.sender;
+	var line = $("<div class='"+css+"'></div>");
+	var sender = $("<div class=sender></div>");
+	sender.text(msg.sender);
+	
+	var recipient = $("<div class=recipient></div>");
+	recipient.text(msg.recipient);
+
+	line.append(sender).append(recipient).append(msg.text);
+	wnd.append(line);
+	msg.seen = true;
+}
+
+function doesMessageInvolveUser(message, login){
+	return (message.sender == login || message.recipient == login);	
+}
+
+function rememberMessage(message){
+	var otherUser = message.sender;
+	if (otherUser == getCurrentUserLogin())
+		otherUser = message.recipient;
+	var conversation = session.getConversationWith(otherUser);
+	conversation.messages.push(message);
+	session.lastReadMessageId = Math.max(session.lastReadMessageId, message.id);
+}
+
 function showChatWith(user){
-	var conversation = session[user]||{lastReadMessageId:-1};
-	session[user] = conversation;	
+	var conversation = session.getConversationWith(user);
+	var wnd = $("#chatwindow");
+	var me = getCurrentUserLogin();
+	if (session.currentChatPartnerWindow!=user){
+		session.currentChatPartnerWindow=user;
+		wnd.empty();
+		for (var i=0;i<conversation.messages.length;i++)
+			renderMessageLine(conversation.messages[i]);
+	}
 	$.ajax({
 		dataType: "json",
-		url: "ajax/users/"+getCurrentUserLogin()+"/messages/from/"+user+"?lastReadMessageId="+conversation.lastReadMessageId,
+		url: "ajax/users/"+me+"/messages?lastReadMessageId="+session.lastReadMessageId,
 		success: function(data){
-			var wnd = $("#chatwindow");
-			wnd.empty();
 			for (var i=0;i<data.list.length;i++){
-				var msg = data.list[i];
-				var line = $("<div></div>");
-				line.attr("id", msg.id);
-				line.text(msg.sender+">"+msg.text);
-				wnd.append(line);
-				conversation.lastReadMessageId = Math.max(conversation.lastReadMessageId, msg.id);				
+				var message = data.list[i];
+				rememberMessage(message);
+				if (doesMessageInvolveUser(message, user)){
+					renderMessageLine(message);
+				}
 			}
 		}
 		});
@@ -109,11 +162,21 @@ $("#input").keypress(function(e){
 });
 
 $("#onlineusers").change(function(e){
-	var user = $("#onlineusers option:selected").text();
+	var user = getCurrentChatPartner();
 	showChatWith(user);
 });
 
-var session = {};
+var session = {
+		currentChatPartnerWindow:"",
+		getConversationWith:function(user){
+			var c = session.conversations[user]||{messages:[]};
+			session.conversations[user] = c;
+			return c;
+		},
+		lastReadMessageId:-1,
+		onlineUsers:{hash:0},
+		conversations:{}
+};
 </script>
 </body>
 </html>

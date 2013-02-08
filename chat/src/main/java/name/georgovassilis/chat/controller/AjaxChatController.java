@@ -28,9 +28,15 @@ public class AjaxChatController {
 		chatService.logon(value);
 	}
 
-	@RequestMapping(value = "/users/logoff/{name}", method = RequestMethod.GET)
+	@RequestMapping(value = "/users/logoff/{name}")
 	public @ResponseBody void logoffUser(@PathVariable String name) {
 		chatService.logoff(name);
+	}
+
+	@RequestMapping(value = "/users/{recipient}/messages", method = RequestMethod.GET)
+	public @ResponseBody MessageListDTO getMessages(@PathVariable String recipient, int lastReadMessageId) {
+		MessageListDTO result = chatService.getMessagesFor(recipient, lastReadMessageId);
+		return result;
 	}
 
 	@RequestMapping(value = "/users/{recipient}/messages/from/{sender}", method = RequestMethod.GET)
@@ -40,7 +46,7 @@ public class AjaxChatController {
 	}
 
 	@RequestMapping(value = "/users/{recipient}/messages/from/{sender}", method = RequestMethod.POST)
-	public @ResponseBody void getMessagesBetweenUsers(@PathVariable String recipient, @PathVariable String sender, String text) {
+	public @ResponseBody void sendMessage(@PathVariable String recipient, @PathVariable String sender, String text) {
 		chatService.sendMessage(sender, recipient, text);
 	}
 }
