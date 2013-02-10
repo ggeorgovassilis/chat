@@ -1,19 +1,20 @@
 package name.georgovassilis.chat.controller;
 
-import org.slf4j.Logger;
 
-
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import name.georgovassilis.chat.model.dto.*;
 import name.georgovassilis.chat.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * REST JSON controller that handles login, logout, retrieving chat messages, sending messages and getting active users
+ * @author george georgovassilis
+ *
+ */
 @Controller
 public class AjaxChatController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AjaxChatController.class);
 	@Autowired
 	private IChatService chatService;
 

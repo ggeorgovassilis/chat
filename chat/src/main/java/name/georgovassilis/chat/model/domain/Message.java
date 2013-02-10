@@ -4,6 +4,11 @@ import javax.persistence.*;
 import java.util.Date;
 import java.io.Serializable;
 
+/**
+ * A message is a piece of text sent between users
+ * @author george georgovassilis
+ *
+ */
 @Entity
 public class Message implements Serializable {
 
@@ -13,10 +18,29 @@ public class Message implements Serializable {
 
 	@Id
 	private Integer id;
+	/**
+	 * Message payload. No restrictions on format or size.
+	 */
 	private String text;
+	
+	/**
+	 * Date the message was sent
+	 */
 	private Date sent;
+
+	/**
+	 * ID of recipient
+	 */
 	private String recipient;
+	
+	/**
+	 * ID of sender
+	 */
 	private String sender;
+	
+	/**
+	 * Message status. Initially unread.
+	 */
 	private Status status = Status.unread;
 
 	public Status getStatus() {

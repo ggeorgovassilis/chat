@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Models a list of messages
+ * @author george georgovassilis
+ *
+ */
 public class MessageListDTO implements Serializable{
 
 	private List<MessageDTO> list = new ArrayList<MessageDTO>();

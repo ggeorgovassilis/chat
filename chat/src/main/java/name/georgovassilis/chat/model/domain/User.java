@@ -4,6 +4,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * Models a user. Users are identified by their unique login
+ * @author george georgovassilis
+ *
+ */
 @Entity
 public class User implements Serializable{
 
@@ -11,9 +16,20 @@ public class User implements Serializable{
 		offline, online;
 	};
 
+
+	/**
+	 * Unique user login. No restrictions on format or size.
+	 */
 	@Id
 	private String login;
+	/**
+	 * User status: online or offline
+	 */
 	private Status status = Status.offline;
+	
+	/**
+	 * Last message a user has read
+	 */
 	private int lastMessageRead;
 
 	public int getLastMessageRead() {

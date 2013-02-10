@@ -3,6 +3,11 @@ package name.georgovassilis.chat.model.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * DTO for {@link Message}
+ * @author george georgovassilis
+ *
+ */
 public class MessageDTO implements Serializable {
 
 	private int id;

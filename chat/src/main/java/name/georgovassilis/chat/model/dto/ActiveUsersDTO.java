@@ -3,6 +3,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * List of online users 
+ * @author george georgovassilis
+ *
+ */
 public class ActiveUsersDTO implements Serializable{
 
 	private List<String> activeUsers = new ArrayList();
