@@ -13,20 +13,26 @@ body,html{
 }
 
 .online-users-section{
-	float:right;
 	height:100%;
+	min-width:200px;
+	width:20%;
 }
 
 #onlineusers{
 	background-color:darksalmon;
 	color:black;
 	height:100%;
+	width:100%;
+	margin:0;
 }
 
 
-.section-header{
-	background:#EEEEEE;
-	padding:1%;
+.online-users-header{
+	background:peru;
+	padding:4px 9px;
+	color:white;
+	font-size:1.4em;
+	vertical-align:middle !important;
 }
 
 #input{
@@ -35,6 +41,7 @@ body,html{
 
 #chatwindow{
 	padding:1%;
+	width:100%;
 }
 
 .message{
@@ -46,11 +53,31 @@ body,html{
 }
 
 .message .sender{
-	float:left;
-	margin-right:0.5em;
 	color:blue;
+	width:10%;
+}
+
+.message .text{
 }
 
 .message .recipient{
 	display:none;
+}
+
+.chat-container{
+	height:100%;
+	padding-left:1%;
+	width:100%;
+}
+
+.chat-container td{
+	vertical-align:top;
+}
+
+.keyboard-section{
+	padding:1%;
+}
+
+.page-wrapper{
+	height:100%;
 }
